@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видео Загрузчик</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 { text-align: center; color: #333; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
+        input[type="url"] {
+            width: 100%; padding: 15px; border: 2px solid #e0e0e0;
+            border-radius: 10px; font-size: 16px;
+        }
+        input[type="url"]:focus { outline: none; border-color: #667eea; }
+        button {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .status {
+            margin-top: 25px; padding: 20px; border-radius: 10px;
+            text-align: center; display: none;
+        }
+        .status.idle { display: block; background: #f5f5f5; color: #666; }
+        .status.downloading { display: block; background: #fff3cd; color: #856404; }
+        .status.ready { display: block; background: #d4edda; color: #155724; }
+        .status.error { display: block; background: #f8d7da; color: #721c24; }
+        .spinner {
+            display: inline-block; width: 20px; height: 20px;
+            border: 3px solid #856404; border-top-color: transparent;
+            border-radius: 50%; animation: spin 1s linear infinite;
+            margin-right: 10px; vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .download-btn { margin-top: 15px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important; }
+        .new-btn { margin-top: 10px; background: #6c757d !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Видео Загрузчик</h1>
+        <p class="subtitle">Скачивай видео с YouTube, Instagram, VK и других платформ</p>
+        
+        <div class="input-group">
+            <label for="url">Ссылка на видео:</label>
+            <input type="url" id="url" placeholder="https://www.youtube.com/watch?v=..." required>
+        </div>
+        
+        <button id="downloadBtn" onclick="startDownload()">📥 Скачать видео</button>
+        
+        <div id="status" class="status idle">
+            <span id="statusText">Готов к загрузке</span>
+            <button id="downloadFileBtn" class="download-btn" style="display: none;" onclick="downloadFile()">📥 Скачать файл</button>
+            <button id="newDownloadBtn" class="new-btn" style="display: none;" onclick="resetForm()">🔄 Новое видео</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/video';
+        let statusCheckInterval = null;
+
+        window.onload = () => checkStatus();
+
+        async function startDownload() {
+            const url = document.getElementById('url').value.trim();
+            if (!url) { alert('Введите ссылку на видео'); return; }
+
+            const btn = document.getElementById('downloadBtn');
+            btn.disabled = true; btn.textContent = '⏳ Загрузка...';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+                const data = await response.json();
+                
+                if (response.status === 409) {
+                    alert('Идёт другая загрузка. Подождите.');
+                } else if (!response.ok) {
+                    alert('Ошибка: ' + (data.message || 'Неизвестная ошибка'));
+                }
+                startStatusCheck();
+            } catch (error) {
+                alert('Ошибка соединения: ' + error.message);
+                btn.disabled = false; btn.textContent = '📥 Скачать видео';
+            }
+        }
+
+        function startStatusCheck() {
+            if (statusCheckInterval) clearInterval(statusCheckInterval);
+            checkStatus();
+            statusCheckInterval = setInterval(checkStatus, 2000);
+        }
+
+        async function checkStatus() {
+            try {
+                const response = await fetch(API_URL + '/status');
+                const data = await response.json();
+                updateUI(data.status);
+
+                if (data.status === 'ready' || data.status === 'error') {
+                    clearInterval(statusCheckInterval);
+                    document.getElementById('downloadBtn').disabled = false;
+                    document.getElementById('downloadBtn').textContent = '📥 Скачать видео';
+                }
+            } catch (error) {
+                console.error('Ошибка проверки статуса:', error);
+            }
+        }
+
+        function updateUI(status) {
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            const downloadBtn = document.getElementById('downloadFileBtn');
+            const newBtn = document.getElementById('newDownloadBtn');
+
+            statusDiv.className = 'status ' + status;
+
+            switch(status) {
+                case 'idle':
+                    statusText.innerHTML = 'Готов к загрузке';
+                    downloadBtn.style.display = 'none';
+                    newBtn.style.display = 'none';
+                    break;
+                case 'downloading':
+                    statusText.innerHTML = '<span class="spinner"></span>Скачивание видео...';
+                    downloadBtn.style.display = 'none';
+                    newBtn.style.display = 'none';
+                    break;
+                case 'ready':
+                    statusText.innerHTML = '✅ Видео готово!';
+                    downloadBtn.style.display = 'inline-block';
+                    newBtn.style.display = 'inline-block';
+                    break;
+                case 'error':
+                    statusText.innerHTML = '❌ Ошибка загрузки';
+                    downloadBtn.style.display = 'none';
+                    newBtn.style.display = 'inline-block';
+                    break;
+            }
+        }
+
+        function downloadFile() {
+            window.location.href = API_URL + '/file';
+        }
+
+        async function resetForm() {
+            await fetch(API_URL, { method: 'DELETE' });
+            document.getElementById('url').value = '';
+            updateUI('idle');
+        }
+    </script>
+</body>
+</html>
