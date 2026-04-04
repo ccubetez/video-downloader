@@ -13,6 +13,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "ccubetez"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/ccubetez/video-downloader.git",
+    "accountId": "02299943-c489-4650-9af5-33673bce22dd"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -61,7 +73,7 @@
       <option name="presentableId" value="Default" />
       <updated>1775311568527</updated>
       <workItem from="1775311569575" duration="2052000" />
-      <workItem from="1775313860514" duration="1588000" />
+      <workItem from="1775313860514" duration="2272000" />
     </task>
     <servers />
   </component>

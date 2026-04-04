@@ -19,9 +19,16 @@ Spring Boot приложение для скачивания видео с YouTu
 mvn clean package
 ```
 
-## Запуск
+## Быстрый запуск
 
 ```bash
+./start.sh
+```
+
+Или вручную:
+
+```bash
+mvn clean package
 java -jar target/video-downloader-1.0.0.jar
 ```
 
@@ -63,5 +70,6 @@ video-downloader/
 │   ├── static/index.html
 │   └── bin/yt-dlp
 ├── pom.xml
-└── Dockerfile
+├── Dockerfile
+└── start.sh
 ```
