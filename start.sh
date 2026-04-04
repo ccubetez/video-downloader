@@ -72,7 +72,7 @@ APP_PID=$!
 
 # Wait for application to start
 echo -n "⏳ Ожидание запуска"
-for i in {1..30}; do
+for i in {1..60}; do
     if curl -s http://localhost:$PORT/api/video/status &> /dev/null; then
         echo ""
         echo ""
@@ -91,6 +91,11 @@ for i in {1..30}; do
 done
 
 echo ""
-echo -e "${RED}❌ Приложение не запустилось вовремя${NC}"
-kill $APP_PID 2>/dev/null || true
-exit 1
+echo -e "${YELLOW}⚠️  Приложение запускается дольше обычного...${NC}"
+echo -e "${GREEN}🌐 Попробуйте открыть вручную: http://localhost:$PORT${NC}"
+echo ""
+echo "📋 Команды:"
+echo "   Проверить статус: curl http://localhost:$PORT/api/video/status"
+echo "   Остановить: kill $APP_PID"
+echo ""
+exit 0
