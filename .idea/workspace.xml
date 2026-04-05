@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="41bb49b1-7df0-4ae5-a15c-11e09abe1d8d" name="Changes" comment="Start.sh timeout increased to 60 s.">
+    <list default="true" id="41bb49b1-7df0-4ae5-a15c-11e09abe1d8d" name="Changes" comment="start.bat — полностью переписан&#10;start.sh — исправлено определение занятого порта">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/downloader/service/VideoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/downloader/service/VideoService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/bin/yt-dlp" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +27,9 @@
     &quot;accountId&quot;: &quot;02299943-c489-4650-9af5-33673bce22dd&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -78,7 +78,7 @@
       <option name="presentableId" value="Default" />
       <updated>1775311568527</updated>
       <workItem from="1775311569575" duration="2052000" />
-      <workItem from="1775313860514" duration="6549000" />
+      <workItem from="1775313860514" duration="9330000" />
     </task>
     <task id="LOCAL-00001" summary="Start.sh script constructed. For better user experience.">
       <option name="closed" value="true" />
@@ -112,7 +112,23 @@
       <option name="project" value="LOCAL" />
       <updated>1775320373260</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Start.sh timeout increased to 60 s.&#10;&#10;Changes:&#10;- Added yt-dlp binaries for all platforms: macOS, Linux, Windows&#10;- Updated VideoService to auto-detect OS and extract appropriate binary&#10;- Created start.bat for Windows users&#10;- Updated start.sh with better error handling and longer timeout&#10;- Split README.md into platform-specific sections&#10;&#10;Added:&#10;- src/main/resources/bin/macos/yt-dlp&#10;- src/main/resources/bin/linux/yt-dlp&#10;- src/main/resources/bin/windows/yt-dlp.exe&#10;- start.bat&#10;&#10;Modified:&#10;- VideoService.java - OS detection and binary extraction logic&#10;- README.md - platform-specific instructions&#10;- start.sh - increased timeout&#10;- pom.xml - Spring Boot config&#10;- Dockerfile - base image config&quot;">
+      <option name="closed" value="true" />
+      <created>1775370730783</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1775370730783</updated>
+    </task>
+    <task id="LOCAL-00006" summary="start.bat — полностью переписан&#10;start.sh — исправлено определение занятого порта">
+      <option name="closed" value="true" />
+      <created>1775385682903</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1775385682903</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -132,7 +148,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Start.sh script constructed. For better user experience." />
     <MESSAGE value="Start.sh timeout increased to 60 s." />
-    <option name="LAST_COMMIT_MESSAGE" value="Start.sh timeout increased to 60 s." />
+    <MESSAGE value="Start.sh timeout increased to 60 s.&#10;&#10;Changes:&#10;- Added yt-dlp binaries for all platforms: macOS, Linux, Windows&#10;- Updated VideoService to auto-detect OS and extract appropriate binary&#10;- Created start.bat for Windows users&#10;- Updated start.sh with better error handling and longer timeout&#10;- Split README.md into platform-specific sections&#10;&#10;Added:&#10;- src/main/resources/bin/macos/yt-dlp&#10;- src/main/resources/bin/linux/yt-dlp&#10;- src/main/resources/bin/windows/yt-dlp.exe&#10;- start.bat&#10;&#10;Modified:&#10;- VideoService.java - OS detection and binary extraction logic&#10;- README.md - platform-specific instructions&#10;- start.sh - increased timeout&#10;- pom.xml - Spring Boot config&#10;- Dockerfile - base image config&quot;" />
+    <MESSAGE value="start.bat — полностью переписан&#10;start.sh — исправлено определение занятого порта" />
+    <option name="LAST_COMMIT_MESSAGE" value="start.bat — полностью переписан&#10;start.sh — исправлено определение занятого порта" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
