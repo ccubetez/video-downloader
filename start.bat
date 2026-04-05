@@ -14,7 +14,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo ✅ Java найденa
+echo ✅ Java найдена
 
 REM Check if JAR exists
 if not exist "target\video-downloader-1.0.0.jar" (
@@ -51,15 +51,18 @@ echo.
 echo 🚀 Запускаю приложение...
 echo.
 
-start /B java -jar target\video-downloader-1.0.0.jar > app.log 2>&1
+REM Start Java application in background
+start /B javaw -jar target\video-downloader-1.0.0.jar > app.log 2>&1
 
-set APP_PID=%!
 echo ⏳ Ожидание запуска...
 
 set /a count=0
 :wait_loop
     timeout /t 1 /nobreak >nul
-    curl -s http://localhost:8080/api/video/status >nul 2>&1
+    
+    REM Check if service is ready using PowerShell
+    powershell -Command "try { Invoke-WebRequest -Uri 'http://localhost:8080/api/video/status' -UseBasicParsing -ErrorAction Stop | Out-Null; exit 0 } catch { exit 1 }" >nul 2>&1
+    
     if not errorlevel 1 (
         echo.
         echo ✅ Приложение запущено!
@@ -67,12 +70,13 @@ set /a count=0
         echo 🌐 Откройте в браузере: http://localhost:8080
         echo.
         echo 📋 Команды:
-        echo    Остановить: taskkill /F /PID %APP_PID%
+        echo    Остановить: taskkill /F /IM javaw.exe
         echo    Логи: type app.log
         echo.
-        pause
+        start http://localhost:8080
         exit /b 0
     )
+    
     set /a count+=1
     if %count% GEQ 60 goto timeout
     echo|set /p=.
@@ -84,7 +88,7 @@ echo ⚠️  Приложение запускается дольше обычн
 echo 🌐 Попробуйте открыть вручную: http://localhost:8080
 echo.
 echo 📋 Команды:
-echo    Проверить статус: curl http://localhost:8080/api/video/status
-echo    Остановить: taskkill /F /IM java.exe
+echo    Проверить логи: type app.log
+echo    Остановить: taskkill /F /IM javaw.exe
 echo.
 pause

@@ -56,9 +56,10 @@ if [ ! -f "$JAR_FILE" ]; then
 fi
 
 # Check if port is already in use
-if lsof -ti:$PORT &> /dev/null; then
+PID=$(lsof -ti:$PORT 2>/dev/null || netstat -tlnp 2>/dev/null | grep ":$PORT " | awk '{print $7}' | cut -d'/' -f1 || ss -tlnp 2>/dev/null | grep ":$PORT " | awk '{print $7}' | cut -d',' -f2 | cut -d'=' -f2)
+if [ -n "$PID" ]; then
     echo -e "${YELLOW}⚠️  Порт $PORT занят. Останавливаю предыдущий процесс...${NC}"
-    lsof -ti:$PORT | xargs kill -9 2>/dev/null || true
+    kill -9 $PID 2>/dev/null || true
     sleep 2
 fi
 
