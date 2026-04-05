@@ -6,20 +6,15 @@ Spring Boot приложение для скачивания видео с YouTu
 
 - 🎬 Скачивание видео через yt-dlp
 - 🌐 Веб-интерфейс для удобной работы
-- 📦 yt-dlp встроен в приложение (не требует установки)
+- 📦 yt-dlp встроен для всех платформ (Windows, macOS, Linux)
 - 🔒 Один видео-файл за раз (очередь загрузок)
+- 💻 Работает на Windows, macOS и Linux
 
 ## Требования
 
 - Java 17+
 
-## Сборка
-
-```bash
-mvn clean package
-```
-
-## Быстрый запуск
+## Запуск на Linux/macOS
 
 ```bash
 ./start.sh
@@ -28,6 +23,23 @@ mvn clean package
 Или вручную:
 
 ```bash
+mvn clean package
+java -jar target/video-downloader-1.0.0.jar
+```
+
+Приложение будет доступно на http://localhost:8080
+
+## Запуск на Windows
+
+Двойной клик на `start.bat` или в командной строке:
+
+```cmd
+start.bat
+```
+
+Или вручную:
+
+```cmd
 mvn clean package
 java -jar target/video-downloader-1.0.0.jar
 ```
@@ -68,8 +80,12 @@ video-downloader/
 │   └── service/VideoService.java
 ├── src/main/resources/
 │   ├── static/index.html
-│   └── bin/yt-dlp
+│   └── bin/
+│       ├── macos/yt-dlp
+│       ├── linux/yt-dlp
+│       └── windows/yt-dlp.exe
 ├── pom.xml
 ├── Dockerfile
-└── start.sh
+├── start.sh          # Linux/macOS
+└── start.bat         # Windows
 ```

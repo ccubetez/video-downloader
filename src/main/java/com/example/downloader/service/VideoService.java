@@ -21,24 +21,27 @@ public class VideoService {
     private volatile Map<String, String> status = Map.of("status", "idle");
     private volatile File currentFile;
     private volatile CompletableFuture<Void> currentTask;
+    private String ytDlpPath;
 
     @PostConstruct
     public void init() throws Exception {
-        String dir = System.getProperty("downloader.temp.dir", "/tmp/video-downloader");
+        String dir = System.getProperty("downloader.temp.dir", System.getProperty("java.io.tmpdir") + "/video-downloader");
         workDir = Path.of(dir);
         Files.createDirectories(workDir);
         System.out.println("VideoService initialized. Work dir: " + workDir);
 
-        // Check yt-dlp is available
+        // Extract yt-dlp for current OS
+        ytDlpPath = extractYtDlp();
+        
+        // Check yt-dlp version
         try {
-            ProcessBuilder pb = new ProcessBuilder(getYtDlpPath(), "--version");
+            ProcessBuilder pb = new ProcessBuilder(ytDlpPath, "--version");
             Process p = pb.start();
             p.waitFor();
             String version = new BufferedReader(new InputStreamReader(p.getInputStream())).readLine();
             System.out.println("yt-dlp version: " + version);
         } catch (Exception e) {
-            System.err.println("WARNING: yt-dlp not available. Downloads will fail.");
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("WARNING: yt-dlp not working: " + e.getMessage());
         }
     }
 
@@ -74,7 +77,7 @@ public class VideoService {
             Path outputPath = workDir.resolve(filename);
 
             ProcessBuilder pb = new ProcessBuilder(
-                    getYtDlpPath(),
+                    ytDlpPath,
                     "-f", "best[height<=1080]",
                     "--merge-output-format", "mp4",
                     "-o", outputPath.toString(),
@@ -130,33 +133,45 @@ public class VideoService {
         status = Map.of("status", "idle");
     }
 
-    private String getYtDlpPath() {
-        // First, try to find embedded yt-dlp
-        try {
-            // Try to extract from resources to temp directory
-            Path tempDir = Path.of(System.getProperty("java.io.tmpdir"), "video-downloader-bin");
-            Files.createDirectories(tempDir);
-            Path ytDlpPath = tempDir.resolve("yt-dlp");
+    private String extractYtDlp() throws Exception {
+        String os = System.getProperty("os.name").toLowerCase();
+        String resourcePath;
+        String exeName;
+        
+        if (os.contains("mac")) {
+            resourcePath = "/bin/macos/yt-dlp";
+            exeName = "yt-dlp";
+        } else if (os.contains("win")) {
+            resourcePath = "/bin/windows/yt-dlp.exe";
+            exeName = "yt-dlp.exe";
+        } else {
+            // Linux and others
+            resourcePath = "/bin/linux/yt-dlp";
+            exeName = "yt-dlp";
+        }
+        
+        Path tempDir = Path.of(System.getProperty("java.io.tmpdir"), "video-downloader-bin");
+        Files.createDirectories(tempDir);
+        Path ytDlpFile = tempDir.resolve(exeName);
 
-            if (!Files.exists(ytDlpPath)) {
-                // Extract from resources
-                try (InputStream is = getClass().getResourceAsStream("/bin/yt-dlp")) {
-                    if (is != null) {
-                        Files.copy(is, ytDlpPath);
-                        ytDlpPath.toFile().setExecutable(true);
-                        System.out.println("Extracted yt-dlp to: " + ytDlpPath);
+        if (!Files.exists(ytDlpFile)) {
+            try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+                if (is == null) {
+                    throw new RuntimeException("yt-dlp not found in resources: " + resourcePath);
+                }
+                Files.copy(is, ytDlpFile);
+                
+                // Make executable (Unix-like systems)
+                if (!os.contains("win")) {
+                    boolean success = ytDlpFile.toFile().setExecutable(true);
+                    if (!success) {
+                        System.err.println("Warning: Could not make yt-dlp executable");
                     }
                 }
+                System.out.println("Extracted yt-dlp for " + os + " to: " + ytDlpFile);
             }
-
-            if (Files.exists(ytDlpPath)) {
-                return ytDlpPath.toString();
-            }
-        } catch (Exception e) {
-            System.err.println("Failed to extract embedded yt-dlp: " + e.getMessage());
         }
 
-        // Fallback to system PATH
-        return "yt-dlp";
+        return ytDlpFile.toString();
     }
 }
