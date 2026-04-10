@@ -70,22 +70,4 @@ docker build -t video-downloader .
 docker run -p 8080:8080 video-downloader
 ```
 
-## Структура проекта
 
-```
-video-downloader/
-├── src/main/java/com/example/downloader/
-│   ├── VideoDownloaderApplication.java
-│   ├── controller/VideoController.java
-│   └── service/VideoService.java
-├── src/main/resources/
-│   ├── static/index.html
-│   └── bin/
-│       ├── macos/yt-dlp
-│       ├── linux/yt-dlp
-│       └── windows/yt-dlp.exe
-├── pom.xml
-├── Dockerfile
-├── start.sh          # Linux/macOS
-└── start.bat         # Windows
-```
